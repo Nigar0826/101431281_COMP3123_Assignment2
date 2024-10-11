@@ -1,7 +1,7 @@
 {
   "name": "101431281_comp3123_assignment1",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"

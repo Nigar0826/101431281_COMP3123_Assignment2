@@ -13,7 +13,7 @@ const app = express();
 // Connect to the MongoDB database using the connectDB function from db.js
 connectDB();
 
-// Use bodyParser middleware to parse incoming JSON requests
+// Middleware to parse JSON requests
 app.use(bodyParser.json());
 
 // Define a basic route for testing if the API is running
@@ -21,11 +21,11 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// Use the routes defined in userRoutes and employeeRoutes
+// Use user and employee routes
 app.use('/api/v1/user', userRoutes); 
 app.use('/api/v1/emp', employeeRoutes);
 
-// Define the port for the server to listen 
+// Define server port 
 const PORT = process.env.PORT || 3000;
 
 // Start the server 

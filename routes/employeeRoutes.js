@@ -1,9 +1,10 @@
 const express = require('express');
+const { check, validationResult } = require('express-validator');
 const Employee = require('../models/employeeModel');
 const router = express.Router();
 
 // GET /api/v1/emp/employees - Get all employees
-router.get('/api/v1/emp/employees', async (req, res) => {
+router.get('/employees', async (req, res) => {
   try {
     const employees = await Employee.find();
     res.json(employees);
@@ -13,7 +14,7 @@ router.get('/api/v1/emp/employees', async (req, res) => {
 });
 
 // GET /api/v1/emp/employees/:eid - Get employee by ID
-router.get('/api/v1/emp/employees/:eid', async (req, res) => {
+router.get('/employees/:eid', async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.eid);
     if (!employee) return res.status(404).json({ message: 'Employee not found' });
@@ -24,19 +25,33 @@ router.get('/api/v1/emp/employees/:eid', async (req, res) => {
 });
 
 // POST /api/v1/emp/employees - Create a new employee
-router.post('/api/v1/emp/employees', async (req, res) => {
-  
+router.post('/employees', [
+  // Validation checks
+  check('first_name', 'First Name is required').notEmpty(),
+  check('last_name', 'Last Name is required').notEmpty(),
+  check('email', 'Please include a valid email').isEmail(),
+  check('position', 'Position is required').notEmpty(),
+  check('salary', 'Salary must be a number').isNumeric(),
+  check('date_of_joining', 'Date of joining is required').notEmpty(),
+  check('department', 'Department is required').notEmpty()
+], async (req, res) => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { first_name, last_name, email, position, salary, date_of_joining, department } = req.body;
 
-  // Create a new Employee 
+  // Create a new Employee
   const employee = new Employee({
-    first_name: first_name,
-    last_name: last_name,
-    email: email,
-    position: position,
-    salary: salary,
-    date_of_joining: date_of_joining,
-    department: department
+    first_name,
+    last_name,
+    email,
+    position,
+    salary,
+    date_of_joining,
+    department
   });
 
   try {
@@ -52,7 +67,22 @@ router.post('/api/v1/emp/employees', async (req, res) => {
 });
 
 // PUT /api/v1/emp/employees/:eid - Update employee by ID
-router.put('/api/v1/emp/employees/:eid', async (req, res) => {
+router.put('/employees/:eid', [
+  // Validation checks for updates (use similar checks as for creating an employee)
+  check('first_name', 'First Name is required').optional().notEmpty(),
+  check('last_name', 'Last Name is required').optional().notEmpty(),
+  check('email', 'Please include a valid email').optional().isEmail(),
+  check('position', 'Position is required').optional().notEmpty(),
+  check('salary', 'Salary must be a number').optional().isNumeric(),
+  check('date_of_joining', 'Date of joining is required').optional().notEmpty(),
+  check('department', 'Department is required').optional().notEmpty()
+], async (req, res) => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
     // Find employee by ID and update with the new data
     const updatedEmployee = await Employee.findByIdAndUpdate(req.params.eid, req.body, { new: true });
@@ -67,7 +97,7 @@ router.put('/api/v1/emp/employees/:eid', async (req, res) => {
 });
 
 // DELETE /api/v1/emp/employees?eid=xxx - Delete employee by ID
-router.delete('/api/v1/emp/employees', async (req, res) => {
+router.delete('/employees', async (req, res) => {
   try {
     const employeeId = req.query.eid;
     // Find employee by ID and delete from the database

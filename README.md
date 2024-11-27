@@ -74,7 +74,15 @@ git clone https://github.com/Nigar0826/101431281_COMP3123_Assignment1.git
 - Collections: users, employees
 
 ## Hosting
+- The application is deployed on Render at the following URL:
+https://one01431281-comp3123-assignment1.onrender.com
 
 ## No JWT authentication is implemented (optional feature).
 
-## Submitted files:
+## Submission:
+- Project ZIP File - 101431281_COMP3123_Assignment1
+- Screenshots File - Assignment1_screenshots_Nigar
+- Exported Postman Testing Collection - COMP3123 Assignment API.postman_collection
+- GitHub Assignment Repo Link - https://github.com/Nigar0826/101431281_COMP3123_Assignment1
+- Render Hosting URL - https://one01431281-comp3123-assignment1.onrender.com 
+

@@ -2,6 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db'); // MongoDB connection setup
+require('dotenv').config(); // Load environment variables from .env file
 
 // Import routes for users and employees
 const userRoutes = require('./routes/userRoutes');

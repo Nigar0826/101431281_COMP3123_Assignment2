@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
+
 // POST /api/v1/user/signup
 router.post('/signup', [
   // Validation checks
@@ -18,6 +19,7 @@ router.post('/signup', [
   }
 
   const { username, email, password } = req.body;
+
 
   // Create a new User
   const user = new User({
@@ -37,6 +39,7 @@ router.post('/signup', [
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // POST /api/v1/user/login - User login
 router.post('/login', [
@@ -72,6 +75,7 @@ router.post('/login', [
     res.status(500).json({ message: err.message });
   }
 });
+
 
 // GET /api/v1/user/users - Get all users 
 router.get('/users', async (req, res) => {

@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
 });
 
 // Port Configuration
-const PORT = process.env.PORT || 5000; // Changed to 5001 to avoid conflict
+const PORT = process.env.PORT || 5000; 
 
 // Start the Server
 app.listen(PORT, () => {

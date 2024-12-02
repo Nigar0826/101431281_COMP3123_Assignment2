@@ -1,91 +1,92 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
-const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
+const User = require('../models/userModel');
 const router = express.Router();
 
 
-// POST /api/v1/user/signup
-router.post('/signup', [
-  // Validation checks
-  check('username', 'Username is required').notEmpty(),
-  check('email', 'Please include a valid email').isEmail(),
-  check('password', 'Password must be at least 6 characters').isLength({ min: 6 })
-], async (req, res) => {
-  // Check for validation errors
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+// POST /signup - User signup
+router.post(
+  '/signup',
+  [
+    // Validation middleware
+    check('username', 'Username is required').notEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password must be at least 6 characters').isLength({ min: 6 }),
+  ],
+  async (req, res) => {
+    console.log('Incoming Signup Request:', req.body); 
 
-  const { username, email, password } = req.body;
-
-
-  // Create a new User
-  const user = new User({
-    username,
-    email,
-    password
-  });
-
-  try {
-    // Save the new user to the database
-    const newUser = await user.save();
-    res.status(201).json({
-      message: 'User created successfully',
-      user_id: newUser._id
-    });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-
-// POST /api/v1/user/login - User login
-router.post('/login', [
-  // Validation checks
-  check('email', 'Please include a valid email').isEmail(),
-  check('password', 'Password is required').notEmpty()
-], async (req, res) => {
-  // Check for validation errors
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const { email, password } = req.body;
-
-  try {
-    // Find user by email in the database
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+    // Validate incoming request
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.error('Validation Errors:', errors.array());
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+    const { username, email, password } = req.body;
+
+    try {
+      // Check if user already exists
+      console.log('Checking for existing user...');
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        console.error('Signup Error: Email already in use');
+        return res.status(400).json({ message: 'Email already in use.' });
+      }
+
+      // Hash the password
+      console.log('Hashing password...');
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create a new user
+      console.log('Creating new user...');
+      const user = new User({ username, email, password: hashedPassword });
+      const newUser = await user.save();
+
+      console.log('User created successfully:', newUser);
+      res.status(201).json({ message: 'User created successfully', user_id: newUser._id });
+    } catch (err) {
+      console.error('Signup Error:', err.message);
+      res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+  }
+);
+
+// POST /login - User login
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').notEmpty(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    res.json({
-      message: 'Login successful',
-      user_id: user._id
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+    const { email, password } = req.body;
 
+    try {
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ message: 'Invalid email or password.' });
+      }
 
-// GET /api/v1/user/users - Get all users 
-router.get('/users', async (req, res) => {
-  try {
-    // Retrieve all users from the database
-    const users = await User.find();
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Invalid email or password.' });
+      }
+
+      // Return basic user details
+      res.json({ message: 'Login successful', user_id: user._id });
+    } catch (err) {
+      console.error('Login Error:', err.message);
+      res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
   }
-});
+);
 
 module.exports = router;
+

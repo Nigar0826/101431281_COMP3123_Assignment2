@@ -1,88 +1,94 @@
 ## Student Name: Nigar Ahmadova
 ## Student ID: 101431281
-## COMP3123 Assignment 1
+## COMP3123 Assignment 2
 
 ## Project Overview
-This is a RESTful API for managing user accounts and employee records. The application allows users to sign up, log in, and perform CRUD operations on employee data.
+This project combines a full-stack application with a ReactJS frontend and a Node.js/Express backend connected to MongoDB. The application supports user authentication and employee management with CRUD operations and search functionality.
 
-## Technologies Used
-- Node.js: Backend runtime environment.
-- Express.js: Web framework for building the API.
-- MongoDB: NoSQL database used for storing user and employee data.
-- Mongoose: Object Data Modeling library forschema-based object modeling.
-- Express-validator: Library for validating API requests.
-- Postman: Used for testing API requests and responses.
+This assignment leverages Docker for containerization instead of cloud deployment.
 
-## User Management
-1. POST `/api/v1/user/signup`: Creates a new user account.
-2. POST `/api/v1/user/login`: Authenticates a user and logs them in.
+### Features Implemented:
+  ## Backend:
+    # User Authentication:
+         - POST /api/v1/user/signup: Register a user with email and password.
+         - POST /api/v1/user/login: Login and validate credentials.
 
-## Employee Management
-1. GET `/api/v1/emp/employees`: Retrieves all employee records.
-2. POST `/api/v1/emp/employees`: Creates a new employee.
-3. GET `/api/v1/emp/employees/{eid}`: Retrieves an employee by ID.
-4. PUT `/api/v1/emp/employees/{eid}`: Updates an employee’s information.
-5. DELETE `/api/v1/emp/employees?eid=xxx`: Deletes an employee by ID.
+    # Employee Management:
+         - POST /api/v1/employees: Add a new employee.
+         - GET /api/v1/employees: List all employees.
+         - GET /api/v1/employees/:id: View employee details.
+         - PUT /api/v1/employees/:id: Update employee information.
+         - DELETE /api/v1/employees/:id: Delete an employee.
+         - GET /api/v1/employees/search: Search employees by department or position.
+
+    # MongoDB Integration:
+         - MongoDB is used as the database, configured with mongoose.
+         - Validation and error handling for inputs.
+
+    # Dockerization:
+         - Backend, frontend, and MongoDB are containerized using Docker.
+         - Orchestrated with docker-compose.yml.
+
+
+  ## Frontend:
+    # Login and Signup:
+         - Components with form validation.
+
+    # Employee Management:
+         - Employee List: Displays all employees in a table format.
+         - Add Employee: Form for adding new employees with validations.
+         - Edit Employee: Modal for updating employee information.
+         - View Employee: Modal for viewing employee details.
+         - Delete Employee: Deletes employee records.
+         - Search Employees: Filters employees by department or position.
+
+    # Routing and Navigation:
+         - React Router is used for navigating between Login, Signup, and Employee screens.
+
+    # Styling:
+         - Bootstrap used for UI components.
+         - Responsive design for all screens.
+
+
+### Technologies Used
+  ## Backend:
+      - Node.js, Express.js, MongoDB, Mongoose
+      - bcrypt (for password hashing)
+      - express-validator (input validation)
+
+  ## Frontend:
+      - ReactJS, React-Bootstrap, React-Router-DOM, Axios
+
+  ## Containerization:
+      - Docker, Docker Compose
+
+
+### API Endpoints:
+  ## User Routes:
+         - POST /api/v1/user/signup
+         - POST /api/v1/user/login
+  ## Employee Routes:
+         - GET /api/v1/employees
+         - POST /api/v1/employees
+         - GET /api/v1/employees/:id
+         - PUT /api/v1/employees/:id
+         - DELETE /api/v1/employees/:id
+         - GET /api/v1/employees/search
+
 
 ## Instructions to Run the Project
 1. Clone the repository: 
-git clone https://github.com/Nigar0826/101431281_COMP3123_Assignment1.git
+git clone https://github.com/Nigar0826/101431281_COMP3123_Assignment2
 2. Install dependencies: `npm install`
 3. Start the server: `npm start`
-4. Access the API at: `http://localhost:3000`
+4. Access the services:
+     - Frontend: http://localhost:3000
+     - Backend API: http://localhost:5000
 
-## Sample User for Testing
-
-- Username: `newuser`
-- Email: `newuser@example.com`
-- Password: `password`
-
-## How to Test the Login Functionality
-
-1. **Signup:**
-   - Method: `POST`
-   - URL: `http://localhost:3000/api/v1/user/signup`
-   - Body (raw JSON):
-     ```json
-     {
-       "username": "newuser",
-       "email": "newuser@example.com",
-       "password": "password"
-     }
-     ```
-
-2. **Login:**
-   - Method: `POST`
-   - URL: `http://localhost:3000/api/v1/user/login`
-   - Body (raw JSON):
-     ```json
-     {
-       "email": "newuser@example.com",
-       "password": "password"
-     }
-     ```
-
-## API Endpoints:
-- Create User: `/api/v1/user/signup`
-- Login: `/api/v1/user/login`
-- Get Users: `/api/v1/user/users`
-
-
-## MongoDB Setup
-- The database is hosted on MongoDB Atlas.
-- Database Name: comp3123_assignment1
-- Collections: users, employees
-
-## Hosting
-- The application is deployed on Render at the following URL:
-https://one01431281-comp3123-assignment1.onrender.com
-
-## No JWT authentication is implemented (optional feature).
 
 ## Submission:
-- Project ZIP File - 101431281_COMP3123_Assignment1
-- Screenshots File - Assignment1_screenshots_Nigar
-- Exported Postman Testing Collection - COMP3123 Assignment API.postman_collection
-- GitHub Assignment Repo Link - https://github.com/Nigar0826/101431281_COMP3123_Assignment1
-- Render Hosting URL - https://one01431281-comp3123-assignment1.onrender.com 
+- Project ZIP File - 101431281_COMP3123_Assignment2
+- Screenshots File - Assignment2_screenshots_Nigar
+- GitHub Assignment Repo Link - https://github.com/Nigar0826/101431281_COMP3123_Assignment2
+
 

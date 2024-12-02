@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import { Modal, Button, Form, Alert } from 'react-bootstrap'; 
 import { createEmployee } from '../services/apiMethods';
 
 const AddEmployeeModal = ({ show, handleClose, refreshEmployeeList }) => {
@@ -15,30 +15,37 @@ const AddEmployeeModal = ({ show, handleClose, refreshEmployeeList }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
-    });
+    }));
   };
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Call API to create employee
+    // Clear previous alerts
+    setError('');
+    setSuccess('');
+
+    // Send API request
     createEmployee(formData)
       .then(() => {
         setSuccess('Employee added successfully!');
-        setError('');
-        refreshEmployeeList(); // Refresh the employee list
+        refreshEmployeeList(); 
         setTimeout(() => {
           setSuccess('');
-          handleClose();
+          handleClose(); 
         }, 2000);
       })
       .catch((err) => {
-        setError('Failed to add employee. Please try again.');
+        setError(
+          err.response?.data?.message || 'Failed to add employee. Please try again.'
+        );
         console.error('Error adding employee:', err);
       });
   };
@@ -49,85 +56,34 @@ const AddEmployeeModal = ({ show, handleClose, refreshEmployeeList }) => {
         <Modal.Title>Add New Employee</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        {/* Display success or error alerts */}
         {error && <Alert variant="danger">{error}</Alert>}
         {success && <Alert variant="success">{success}</Alert>}
+
+        {/* Form to add a new employee */}
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter first name"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter last name"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Position</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter position"
-              name="position"
-              value={formData.position}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Salary</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Enter salary"
-              name="salary"
-              value={formData.salary}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Date of Joining</Form.Label>
-            <Form.Control
-              type="date"
-              name="date_of_joining"
-              value={formData.date_of_joining}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Department</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter department"
-              name="department"
-              value={formData.department}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
+          {/* Dynamic form generation */}
+          {[
+            { field: 'first_name', type: 'text' },
+            { field: 'last_name', type: 'text' },
+            { field: 'email', type: 'email' },
+            { field: 'position', type: 'text' },
+            { field: 'salary', type: 'number' },
+            { field: 'date_of_joining', type: 'date' },
+            { field: 'department', type: 'text' },
+          ].map(({ field, type }) => (
+            <Form.Group className="mb-3" key={field}>
+              <Form.Label>{field.replace('_', ' ').toUpperCase()}</Form.Label>
+              <Form.Control
+                type={type}
+                placeholder={`Enter ${field.replace('_', ' ')}`}
+                name={field}
+                value={formData[field]}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+          ))}
           <Button variant="primary" type="submit">
             Add Employee
           </Button>

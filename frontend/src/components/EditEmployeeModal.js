@@ -3,19 +3,10 @@ import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { updateEmployee } from '../services/apiMethods';
 
 const EditEmployeeModal = ({ show, handleClose, employee, refreshEmployeeList }) => {
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    position: '',
-    salary: '',
-    date_of_joining: '',
-    department: '',
-  });
+  const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Populate formData with employee data when the modal is opened
   useEffect(() => {
     if (employee) {
       setFormData({
@@ -24,7 +15,7 @@ const EditEmployeeModal = ({ show, handleClose, employee, refreshEmployeeList })
         email: employee.email || '',
         position: employee.position || '',
         salary: employee.salary || '',
-        date_of_joining: employee.date_of_joining ? employee.date_of_joining.split('T')[0] : '', // Format date
+        date_of_joining: employee.date_of_joining?.split('T')[0] || '',
         department: employee.department || '',
       });
     }
@@ -40,16 +31,14 @@ const EditEmployeeModal = ({ show, handleClose, employee, refreshEmployeeList })
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Call API to update the employee
     updateEmployee(employee._id, formData)
       .then(() => {
         setSuccess('Employee updated successfully!');
         setError('');
-        refreshEmployeeList(); // Refresh the employee list
+        refreshEmployeeList();
         setTimeout(() => {
           setSuccess('');
-          handleClose(); // Close the modal
+          handleClose();
         }, 2000);
       })
       .catch((err) => {
@@ -64,85 +53,25 @@ const EditEmployeeModal = ({ show, handleClose, employee, refreshEmployeeList })
         <Modal.Title>Edit Employee</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        {success && <Alert variant="success">{success}</Alert>}
+        {error ? <Alert variant="danger">{error}</Alert> : null}
+        {success ? <Alert variant="success">{success}</Alert> : null}
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter first name"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter last name"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Position</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter position"
-              name="position"
-              value={formData.position}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Salary</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Enter salary"
-              name="salary"
-              value={formData.salary}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Date of Joining</Form.Label>
-            <Form.Control
-              type="date"
-              name="date_of_joining"
-              value={formData.date_of_joining}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Department</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter department"
-              name="department"
-              value={formData.department}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
+          {formData &&
+            Object.keys(formData).map((field) => (
+              <Form.Group className="mb-3" key={field}>
+                <Form.Label>{field.replace('_', ' ').toUpperCase()}</Form.Label>
+                <Form.Control
+                  type={
+                    field === 'salary' ? 'number' : field === 'date_of_joining' ? 'date' : 'text'
+                  }
+                  placeholder={`Enter ${field.replace('_', ' ')}`}
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+            ))}
           <Button variant="primary" type="submit">
             Update Employee
           </Button>

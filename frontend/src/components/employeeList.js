@@ -1,47 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import { getEmployees, searchEmployee } from '../services/apiMethods';
-import AddEmployeeModal from './AddEmployeeModal';
-import EditEmployeeModal from './EditEmployeeModal';
-import ViewEmployeeModal from './ViewEmployeeModal';
-import { Button, Form } from 'react-bootstrap';
+import React, { useEffect, useState } from "react";
+import {
+  getEmployees,
+  searchEmployee,
+} from "../services/apiMethods";
+import AddEmployeeModal from "./AddEmployeeModal";
+import EditEmployeeModal from "./EditEmployeeModal";
+import ViewEmployeeModal from "./ViewEmployeeModal";
+import DeleteEmployeeModal from "./DeleteEmployeeModal";
+import { Button, Form, Table } from "react-bootstrap";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [employeeIdToDelete, setEmployeeIdToDelete] = useState(null);
 
   // State for Search
-  const [searchQuery, setSearchQuery] = useState({ department: '', position: '' });
+  const [searchQuery, setSearchQuery] = useState({
+    department: "",
+    position: "",
+  });
 
   const refreshEmployeeList = () => {
     setLoading(true);
     getEmployees()
       .then((response) => {
-        setEmployees(response.data);
-        setLoading(false);
+        if (Array.isArray(response)) {
+          setEmployees(response);
+        } else {
+          console.error("Unexpected response format:", response);
+          setEmployees([]); 
+        }
       })
-      .catch((error) => {
-        console.error('Error fetching employees:', error);
-        setLoading(false);
-      });
+      .catch((err) => {
+        console.error("Error fetching employees:", err.message);
+        setError("Failed to load employees");
+      })
+      .finally(() => setLoading(false));
   };
 
-  // Search Functionality
   const handleSearch = (e) => {
     e.preventDefault();
     setLoading(true);
     searchEmployee(searchQuery)
       .then((response) => {
-        setEmployees(response.data);
-        setLoading(false);
+        if (Array.isArray(response)) {
+          setEmployees(response);
+        } else {
+          console.error("Unexpected search response format:", response);
+          setEmployees([]);
+        }
       })
-      .catch((error) => {
-        console.error('Error searching employees:', error);
-        setLoading(false);
-      });
+      .catch((err) => {
+        console.error("Error searching employees:", err.message);
+        setError("Failed to search employees");
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleEditClick = (employee) => {
@@ -54,15 +73,22 @@ const EmployeeList = () => {
     setShowViewModal(true);
   };
 
+  const handleDeleteClick = (employeeId) => {
+    setEmployeeIdToDelete(employeeId);
+    setShowDeleteModal(true);
+  };
+
   useEffect(() => {
     refreshEmployeeList();
   }, []);
 
   if (loading) return <p>Loading employees...</p>;
 
+  if (error) return <p>Error: {error}</p>;
+
   return (
-    <div>
-      <h2>Employee List</h2>
+    <div className="container">
+      <h2 className="my-3">Employee List</h2>
 
       {/* Search Form */}
       <Form onSubmit={handleSearch} className="mb-3">
@@ -72,7 +98,9 @@ const EmployeeList = () => {
             type="text"
             placeholder="Enter department"
             value={searchQuery.department}
-            onChange={(e) => setSearchQuery({ ...searchQuery, department: e.target.value })}
+            onChange={(e) =>
+              setSearchQuery({ ...searchQuery, department: e.target.value })
+            }
           />
         </Form.Group>
         <Form.Group className="mb-3">
@@ -81,18 +109,24 @@ const EmployeeList = () => {
             type="text"
             placeholder="Enter position"
             value={searchQuery.position}
-            onChange={(e) => setSearchQuery({ ...searchQuery, position: e.target.value })}
+            onChange={(e) =>
+              setSearchQuery({ ...searchQuery, position: e.target.value })
+            }
           />
         </Form.Group>
         <Button variant="primary" type="submit">
           Search
-        </Button>{' '}
+        </Button>{" "}
         <Button variant="secondary" onClick={refreshEmployeeList}>
           Reset
         </Button>
       </Form>
 
-      <Button variant="success" onClick={() => setShowAddModal(true)} className="mb-3">
+      <Button
+        variant="success"
+        onClick={() => setShowAddModal(true)}
+        className="mb-3"
+      >
         Add Employee
       </Button>
 
@@ -112,8 +146,14 @@ const EmployeeList = () => {
         handleClose={() => setShowViewModal(false)}
         employee={selectedEmployee}
       />
+      <DeleteEmployeeModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        employeeId={employeeIdToDelete}
+        refreshEmployeeList={refreshEmployeeList}
+      />
 
-      <table>
+      <Table striped bordered hover>
         <thead>
           <tr>
             <th>ID</th>
@@ -131,17 +171,29 @@ const EmployeeList = () => {
               <td>{employee.department}</td>
               <td>{employee.position}</td>
               <td>
-                <Button variant="info" onClick={() => handleViewClick(employee)}>
+                <Button
+                  variant="info"
+                  onClick={() => handleViewClick(employee)}
+                >
                   View
-                </Button>{' '}
-                <Button variant="warning" onClick={() => handleEditClick(employee)}>
+                </Button>{" "}
+                <Button
+                  variant="warning"
+                  onClick={() => handleEditClick(employee)}
+                >
                   Edit
+                </Button>{" "}
+                <Button
+                  variant="danger"
+                  onClick={() => handleDeleteClick(employee.id)}
+                >
+                  Delete
                 </Button>
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

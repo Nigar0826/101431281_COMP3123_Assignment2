@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
 const ViewEmployeeModal = ({ show, handleClose, employee }) => {
-  if (!employee) return null; // Return null if no employee is selected
+  if (!employee) return null;
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -10,13 +10,11 @@ const ViewEmployeeModal = ({ show, handleClose, employee }) => {
         <Modal.Title>Employee Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p><strong>First Name:</strong> {employee.first_name}</p>
-        <p><strong>Last Name:</strong> {employee.last_name}</p>
-        <p><strong>Email:</strong> {employee.email}</p>
-        <p><strong>Position:</strong> {employee.position}</p>
-        <p><strong>Salary:</strong> ${employee.salary}</p>
-        <p><strong>Date of Joining:</strong> {employee.date_of_joining}</p>
-        <p><strong>Department:</strong> {employee.department}</p>
+        {Object.entries(employee).map(([key, value]) => (
+          <p key={key}>
+            <strong>{key.replace('_', ' ').toUpperCase()}:</strong> {value}
+          </p>
+        ))}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

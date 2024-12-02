@@ -1,18 +1,20 @@
-import React from "react";
-import { Modal, Button } from "react-bootstrap";
-import { deleteEmployee } from "../services/apiMethods";
+import React from 'react';
+import { Modal, Button } from 'react-bootstrap'; 
+import { deleteEmployee } from '../services/apiMethods';
+
+
 
 const DeleteEmployeeModal = ({ show, handleClose, employeeId, refreshEmployeeList }) => {
   const handleConfirmDelete = () => {
     deleteEmployee(employeeId)
       .then(() => {
-        alert("Employee deleted successfully.");
+        alert('Employee deleted successfully.');
         refreshEmployeeList();
         handleClose();
       })
       .catch((error) => {
-        console.error("Error deleting employee:", error);
-        alert("Failed to delete employee. Please try again.");
+        console.error('Error deleting employee:', error);
+        alert('Failed to delete employee. Please try again.');
       });
   };
 

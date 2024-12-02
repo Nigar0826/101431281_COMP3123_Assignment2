@@ -1,7 +1,10 @@
 {
-  "dependencies": {
-    "bootstrap": "^5.3.3",
-    "iconv-lite": "^0.6.3",
-    "react-bootstrap": "^2.10.6"
+  "name": "root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm run start-frontend && npm run start-backend",
+    "start-frontend": "cd frontend && npm start",
+    "start-backend": "cd backend && npm start"
   }
 }
